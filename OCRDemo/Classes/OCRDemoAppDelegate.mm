@@ -16,7 +16,9 @@
 
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {    
-    
+
+    viewController = [[OCRDemoViewController alloc] init];    
+
     // Override point for customization after app launch    
     [window addSubview:viewController.view];
     [window makeKeyAndVisible];
