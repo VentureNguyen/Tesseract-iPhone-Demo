@@ -14,6 +14,7 @@
 	TessBaseAPI *tess;
 	UIImageView *iv;
 	UILabel *label;
+	UIAlertView *alert;
 
 }
 @property (nonatomic, retain) IBOutlet UIImageView *iv;
@@ -29,4 +30,3 @@
 -(UIImage *)resizeImage:(UIImage *)image;
 
 @end
-
