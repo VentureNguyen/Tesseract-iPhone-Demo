@@ -14,7 +14,6 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 
 @synthesize iv,label;
 
-
 // The designated initializer. Override to perform setup that is required before the view is loaded.
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
@@ -23,7 +22,6 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     }
     return self;
 }
-
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -115,9 +113,67 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 
 - (NSString *) ocrImage: (UIImage *) uiImage
 {
+	// <MARCELO>
+
+	CGContextRef    context = NULL;
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    void *          bitmapData;
+    int             bitmapByteCount;
+    int             bitmapBytesPerRow;
+    int             bitsPerComponent = 8;
+	int width;
+	int height;
 	
-	//code from http://robertcarlsen.net/2009/12/06/ocr-on-iphone-demo-1043
 	
+	CGImageRef image = uiImage.CGImage;
+	
+	int numberOfComponents = 4;
+	
+	width = CGImageGetWidth(image);
+	height = CGImageGetHeight(image);
+	CGRect imageRect = {{0,0},{width, height}};
+	// Declare the number of bytes per row. Each pixel in the bitmap in this example is represented by 4 bytes; 8 bits each of red, green, blue, and  alpha.
+	bitmapBytesPerRow   = (width * numberOfComponents);
+	bitmapByteCount     = (bitmapBytesPerRow * height);
+	
+	// Allocate memory for image data. This is the destination in memory
+	// where any drawing to the bitmap context will be rendered.
+	bitmapData = malloc( bitmapByteCount );
+	if (bitmapData == NULL) {
+		CGColorSpaceRelease( colorSpace );
+		return @"";
+	}
+	
+	context = CGBitmapContextCreate (bitmapData, width, height, 
+									 bitsPerComponent, bitmapBytesPerRow, colorSpace,
+									 kCGImageAlphaPremultipliedFirst);//kCGImageAlphaNoneSkipFirst);//kCGImageAlphaNone);//
+	if (context == NULL)  {
+		free (bitmapData);
+		CGColorSpaceRelease( colorSpace );
+		return @"";
+	}
+	
+	CGContextDrawImage(context, imageRect, image);
+	CGColorSpaceRelease( colorSpace );
+	void * buf = CGBitmapContextGetData (context);	
+	
+	NSDate *start = [NSDate date];
+
+	char* text = tess->TesseractRect((unsigned char*)buf, 4, bitmapBytesPerRow, 0, 0, width, height);
+	
+	NSDate *end = [NSDate date];
+	NSLog(@"%g", [end timeIntervalSinceDate:start]);
+	
+	free( buf );
+	
+	// Do something useful with the text!
+	NSLog(@"Converted text: %@",[NSString stringWithCString:text encoding:NSUTF8StringEncoding]);
+	
+	return [NSString stringWithCString:text encoding:NSUTF8StringEncoding];
+	// </MARCELO>
+	
+	/*
+	//code from http://robertcarlsen.net/2009/12/06/ocr-on-iphone-demo-1043	
 	CGSize imageSize = [uiImage size];
 	double bytes_per_line	= CGImageGetBytesPerRow([uiImage CGImage]);
 	double bytes_per_pixel	= CGImageGetBitsPerPixel([uiImage CGImage]) / 8.0;
@@ -131,7 +187,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 	// Do something useful with the text!
 	NSLog(@"Converted text: %@",[NSString stringWithCString:text encoding:NSUTF8StringEncoding]);
 
-	return [NSString stringWithCString:text encoding:NSUTF8StringEncoding];
+	return [NSString stringWithCString:text encoding:NSUTF8StringEncoding];*/
 }
 
 
@@ -190,6 +246,19 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 	return result;	
 }
 
+// <MARCELO>
+-(void)doOCR:(UIImage*)image
+{
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	NSString *text = [self ocrImage:image];
+	label.text = text;
+	
+	[pool release];
+	
+	[alert dismissWithClickedButtonIndex:0 animated:YES];
+}
+// </MARCELO>
 
 #pragma mark -
 #pragma mark UIImagePickerControllerDelegate
@@ -197,16 +266,23 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 		didFinishPickingImage:(UIImage *)image
 				  editingInfo:(NSDictionary *)editingInfo
 {
-	
+	/*
 	// Dismiss the image selection, hide the picker and
-	
-	//show the image view with the picked image
-	
+	//show the image view with the picked image	
 	[picker dismissModalViewControllerAnimated:YES];
 	UIImage *newImage = [self resizeImage:image];
 	iv.image = newImage;
 	NSString *text = [self ocrImage:newImage];
-	label.text = text;
+	label.text = text;*/
+	
+	// <MARCELO>
+	alert = [[UIAlertView alloc] initWithTitle:@"OCRDemo" message:@"Working..." delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
+	[alert show];
+	
+	[picker dismissModalViewControllerAnimated:YES];	
+	[NSThread detachNewThreadSelector:@selector(doOCR:) toTarget:self withObject:image];
+	// </MARCELO>
+	
 	
 }
 
