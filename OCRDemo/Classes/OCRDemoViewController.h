@@ -11,7 +11,7 @@
 
 @interface OCRDemoViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>{
 	UIImagePickerController *imagePickerController;
-	TessBaseAPI *tess;
+    tesseract::TessBaseAPI *tess;
 	UIImageView *iv;
 	UILabel *label;
 	UIAlertView *alert;

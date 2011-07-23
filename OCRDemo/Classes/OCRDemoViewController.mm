@@ -102,11 +102,11 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 	setenv("TESSDATA_PREFIX", [dataPathWithSlash UTF8String], 1);
 	
 	// init the tesseract engine.
-	tess = new TessBaseAPI();
+	tess = new tesseract::TessBaseAPI();
 	
-	tess->SimpleInit([dataPath cStringUsingEncoding:NSUTF8StringEncoding],  // Path to tessdata-no ending /.
-					 "eng",  // ISO 639-3 string or NULL.
-					 false);
+	tess->Init([dataPath cStringUsingEncoding:NSUTF8StringEncoding],    // Path to tessdata-no ending /.
+               "eng"                                                    // ISO 639-3 string or NULL.
+               );
 	
 	
 }
