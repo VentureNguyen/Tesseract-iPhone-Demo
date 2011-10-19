@@ -7,6 +7,7 @@
 
 #import "OCRDemoViewController.h"
 #import "baseapi.h"
+#import "Image.h"
 #include <math.h>
 static inline double radians (double degrees) {return degrees * M_PI/180;}
 
@@ -105,7 +106,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 	tess = new tesseract::TessBaseAPI();
 	
 	tess->Init([dataPath cStringUsingEncoding:NSUTF8StringEncoding],    // Path to tessdata-no ending /.
-               "eng"                                                    // ISO 639-3 string or NULL.
+               "hkid"                                                    // ISO 639-3 string or NULL.
                );
 	
 	
@@ -123,7 +124,14 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     int             bitsPerComponent = 8;
 	int width;
 	int height;
-	
+    
+    // Apply threshold filter
+    
+	ImageWrapper *greyScale = Image::createImage(uiImage, uiImage.size.width, uiImage.size.height);
+    ImageWrapper *blackAndWhite = greyScale.image->autoThreshold();
+    uiImage = blackAndWhite.image->toUIImage();
+    
+    iv.image = uiImage;
 	
 	CGImageRef image = uiImage.CGImage;
 	
@@ -253,7 +261,47 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 	
 	NSString *text = [self ocrImage:image];
 	label.text = text;
-	
+    
+    NSError *error = NULL;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[A-Z20][0-9ZO]{6}\\([0-9AZO]\\)"
+                                                                           options:0
+                                                                             error:&error];
+    
+	NSTextCheckingResult *match = [regex firstMatchInString:text
+                                                    options:0
+                                                      range:NSMakeRange(0, [text length])];
+    
+    UIAlertView *resultAlert = [[UIAlertView alloc]initWithTitle:@"ID Card Scanning"
+                                                         message:@""
+                                                        delegate:nil
+                                               cancelButtonTitle:@"Done"
+                                               otherButtonTitles:nil];
+    if (match) {
+        NSRange range = match.range;
+        NSString *substring = [text substringWithRange:range];
+        substring = [substring stringByReplacingOccurrencesOfString:@"2"
+                                                         withString:@"Z"
+                                                            options:0
+                                                              range:NSMakeRange(0, 1)];
+        substring = [substring stringByReplacingOccurrencesOfString:@"0"
+                                                         withString:@"O"
+                                                            options:0
+                                                              range:NSMakeRange(0, 1)];
+        substring = [substring stringByReplacingOccurrencesOfString:@"Z"
+                                                         withString:@"2"
+                                                            options:0
+                                                              range:NSMakeRange(1, [substring length]-1)];
+        substring = [substring stringByReplacingOccurrencesOfString:@"O"
+                                                         withString:@"0"
+                                                            options:0
+                                                              range:NSMakeRange(1, [substring length]-1)];
+        resultAlert.message = [NSString stringWithFormat:@"ID card number found: %@", substring];
+    } else {
+        resultAlert.message = @"Sorry, no ID card number can be detected";
+    }
+    [resultAlert show];
+    [resultAlert release];
+    
 	[pool release];
 	
 	[alert dismissWithClickedButtonIndex:0 animated:YES];

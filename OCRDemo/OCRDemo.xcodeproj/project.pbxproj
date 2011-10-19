@@ -29,7 +29,8 @@
 		E87B40DF13DB1C29004634DC /* libtesseract_training.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E87B40D313DB1C29004634DC /* libtesseract_training.a */; };
 		E87B40E013DB1C29004634DC /* libtesseract_viewer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E87B40D413DB1C29004634DC /* libtesseract_viewer.a */; };
 		E87B40E113DB1C29004634DC /* libtesseract_wordrec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E87B40D513DB1C29004634DC /* libtesseract_wordrec.a */; };
-		E87B419213DB240D004634DC /* tessdata in Resources */ = {isa = PBXBuildFile; fileRef = E87B418F13DB240D004634DC /* tessdata */; };
+		E87B423E13DC43CA004634DC /* Image.mm in Sources */ = {isa = PBXBuildFile; fileRef = E87B423D13DC43CA004634DC /* Image.mm */; };
+		E87B428213DC6B14004634DC /* tessdata in Resources */ = {isa = PBXBuildFile; fileRef = E87B427E13DC6B14004634DC /* tessdata */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,7 +61,9 @@
 		E87B40D313DB1C29004634DC /* libtesseract_training.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtesseract_training.a; path = "../tesseract-3.00/outdir/libtesseract_training.a"; sourceTree = SOURCE_ROOT; };
 		E87B40D413DB1C29004634DC /* libtesseract_viewer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtesseract_viewer.a; path = "../tesseract-3.00/outdir/libtesseract_viewer.a"; sourceTree = SOURCE_ROOT; };
 		E87B40D513DB1C29004634DC /* libtesseract_wordrec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtesseract_wordrec.a; path = "../tesseract-3.00/outdir/libtesseract_wordrec.a"; sourceTree = SOURCE_ROOT; };
-		E87B418F13DB240D004634DC /* tessdata */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tessdata; sourceTree = "<group>"; };
+		E87B423C13DC43CA004634DC /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
+		E87B423D13DC43CA004634DC /* Image.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Image.mm; sourceTree = "<group>"; };
+		E87B427E13DC6B14004634DC /* tessdata */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tessdata; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +97,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				E87B423C13DC43CA004634DC /* Image.h */,
+				E87B423D13DC43CA004634DC /* Image.mm */,
 				1D3623240D0F684500981E51 /* OCRDemoAppDelegate.h */,
 				1D3623250D0F684500981E51 /* OCRDemoAppDelegate.mm */,
 				28D7ACF60DDB3853001CB0EB /* OCRDemoViewController.h */,
@@ -134,7 +139,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E87B418F13DB240D004634DC /* tessdata */,
+				E87B427E13DC6B14004634DC /* tessdata */,
 				2899E5210DE3E06400AC0155 /* OCRDemoViewController.xib */,
 				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
 				8D1107310486CEB800E47090 /* OCRDemo-Info.plist */,
@@ -217,7 +222,7 @@
 			files = (
 				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
 				2899E5220DE3E06400AC0155 /* OCRDemoViewController.xib in Resources */,
-				E87B419213DB240D004634DC /* tessdata in Resources */,
+				E87B428213DC6B14004634DC /* tessdata in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -231,6 +236,7 @@
 				1D60589B0D05DD56006BFB54 /* main.mm in Sources */,
 				1D3623260D0F684500981E51 /* OCRDemoAppDelegate.mm in Sources */,
 				28D7ACF80DDB3853001CB0EB /* OCRDemoViewController.mm in Sources */,
+				E87B423E13DC43CA004634DC /* Image.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,6 +247,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -254,6 +261,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = OCRDemo;
+				PROVISIONING_PROFILE = "";
 				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../tesseract-3.00\"/**";
 			};
 			name = Debug;
