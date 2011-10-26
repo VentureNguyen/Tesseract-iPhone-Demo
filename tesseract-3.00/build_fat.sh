@@ -18,8 +18,8 @@ make distclean
 unset CPPFLAGS CFLAGS LDFLAGS CPP CXX CC CXXFLAGS DEVROOT SDKROOT LD
  
 export DEVROOT=/Developer/Platforms/iPhoneOS.platform/Developer
-export SDKROOT=$DEVROOT/SDKs/iPhoneOS4.1.sdk
-export CFLAGS="-arch armv6 -pipe -no-cpp-precomp -isysroot $SDKROOT -miphoneos-version-min=3.0 -I$SDKROOT/usr/include/"
+export SDKROOT=$DEVROOT/SDKs/iPhoneOS4.3.sdk
+export CFLAGS="-arch armv7 -pipe -no-cpp-precomp -isysroot $SDKROOT -miphoneos-version-min=3.0 -I$SDKROOT/usr/include/"
 export CPPFLAGS="$CFLAGS"
 export CXXFLAGS="$CFLAGS"
 export LDFLAGS="-L$SDKROOT/usr/lib/"
@@ -33,7 +33,7 @@ make -j3
 index=0
 while [ "$index" -lt "$count" ]
 do
-    cp ${libdirs[index]}/.libs/libtesseract_${libs[index]}.a $outdir/arm/libtesseract_${libs[index]}_armv6.a
+    cp ${libdirs[index]}/.libs/libtesseract_${libs[index]}.a $outdir/arm/libtesseract_${libs[index]}_armv7.a
     ((index++))
 done
  
@@ -41,7 +41,7 @@ make distclean
 unset CPPFLAGS CFLAGS LDFLAGS CPP CXX CC CXXFLAGS DEVROOT SDKROOT LD
  
 export DEVROOT=/Developer/Platforms/iPhoneSimulator.platform/Developer
-export SDKROOT=$DEVROOT/SDKs/iPhoneSimulator4.1.sdk
+export SDKROOT=$DEVROOT/SDKs/iPhoneSimulator4.3.sdk
 export CFLAGS="-arch i386 -pipe -no-cpp-precomp -isysroot $SDKROOT -miphoneos-version-min=3.0 -I$SDKROOT/usr/include/"
 export CPPFLAGS="$CFLAGS"
 export CXXFLAGS="$CFLAGS"
@@ -64,7 +64,7 @@ done
 index=0
 while [ "$index" -lt "$count" ]
 do
-    /usr/bin/lipo -arch armv6 $outdir/arm/libtesseract_${libs[index]}_armv6.a -arch i386 $outdir/i386/libtesseract_${libs[index]}_i386.a -create -output $outdir/libtesseract_${libs[index]}.a
+    /usr/bin/lipo -arch armv7 $outdir/arm/libtesseract_${libs[index]}_armv7.a -arch i386 $outdir/i386/libtesseract_${libs[index]}_i386.a -create -output $outdir/libtesseract_${libs[index]}.a
     ((index++))
 done
  
