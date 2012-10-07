@@ -17,8 +17,28 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 // The designated initializer. Override to perform setup that is required before the view is loaded.
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
-        // Custom initialization
-
+        // Set up the tessdata path. This is included in the application bundle
+        // but is copied to the Documents directory on the first run.
+        NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentPath = ([documentPaths count] > 0) ? [documentPaths objectAtIndex:0] : nil;
+        
+        NSString *dataPath = [documentPath stringByAppendingPathComponent:@"tessdata"];
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        // If the expected store doesn't exist, copy the default store.
+        if (![fileManager fileExistsAtPath:dataPath]) {
+            // get the path to the app bundle (with the tessdata dir)
+            NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
+            NSString *tessdataPath = [bundlePath stringByAppendingPathComponent:@"tessdata"];
+            if (tessdataPath) {
+                [fileManager copyItemAtPath:tessdataPath toPath:dataPath error:NULL];
+            }
+        }
+        
+        setenv("TESSDATA_PREFIX", [[documentPath stringByAppendingString:@"/"] UTF8String], 1);
+        
+        // init the tesseract engine.
+        tesseract = new tesseract::TessBaseAPI();
+        tesseract->Init([dataPath cStringUsingEncoding:NSUTF8StringEncoding], "eng");
     }
     return self;
 }
@@ -56,7 +76,11 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     imagePickerController.delegate = self;
     imagePickerController.sourceType =  UIImagePickerControllerSourceTypeCamera;
 	
-	[self presentModalViewController:imagePickerController animated:YES];
+    
+	//[self presentModalViewController:imagePickerController animated:YES]; //Depricated in iOS6
+    [self presentViewController:imagePickerController animated:YES completion:nil];
+    
+    
 }
 - (IBAction) findPhoto:(id) sender
 {
@@ -64,7 +88,8 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     imagePickerController.delegate = self;
     imagePickerController.sourceType =  UIImagePickerControllerSourceTypePhotoLibrary;
 	
-	[self presentModalViewController:imagePickerController animated:YES];
+	//[self presentModalViewController:imagePickerController animated:YES]; //Depricated in iOS6
+    [self presentViewController:imagePickerController animated:YES completion:nil];
 }
 
 #pragma mark -
@@ -249,6 +274,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 // <MARCELO>
 -(void)doOCR:(UIImage*)image
 {
+    
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	NSString *text = [self ocrImage:image];
@@ -257,6 +283,17 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 	[pool release];
 	
 	[alert dismissWithClickedButtonIndex:0 animated:YES];
+     
+    /*
+    [self setTesseractImage:image];
+    
+    tesseract->Recognize(NULL);
+    char* utf8Text = tesseract->GetUTF8Text();
+    
+    [self performSelectorOnMainThread:@selector(ocrProcessingFinished:)
+                           withObject:[NSString stringWithUTF8String:utf8Text]
+                        waitUntilDone:NO];
+     */
 }
 // </MARCELO>
 

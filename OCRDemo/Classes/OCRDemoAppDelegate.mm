@@ -19,8 +19,11 @@
 
     viewController = [[OCRDemoViewController alloc] init];    
 
-    // Override point for customization after app launch    
-    [window addSubview:viewController.view];
+    // Override point for customization after app launch
+    
+    //[window addSubview:viewController.view]; //Preferred method is to set the window's root view controller
+    self.window.rootViewController = viewController;
+    
     [window makeKeyAndVisible];
 }
 

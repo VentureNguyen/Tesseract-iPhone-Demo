@@ -15,6 +15,8 @@
 	UIImageView *iv;
 	UILabel *label;
 	UIAlertView *alert;
+    uint32_t *pixels;
+    tesseract::TessBaseAPI *tesseract;
 
 }
 @property (nonatomic, retain) IBOutlet UIImageView *iv;
@@ -25,6 +27,7 @@
 - (IBAction) takePhoto:(id) sender;
 
 - (void) startTesseract;
+
 - (NSString *) applicationDocumentsDirectory;
 - (NSString *) ocrImage: (UIImage *) uiImage;
 -(UIImage *)resizeImage:(UIImage *)image;
